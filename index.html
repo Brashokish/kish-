@@ -45,23 +45,45 @@
 
     <h1>Deploy Your WhatsApp Bot</h1>
     <input type="text" id="githubUsername" placeholder="Enter your GitHub username" required>
-    <button onclick="checkFork()">Continue to Deployment</button>
+    <button onclick="isForked()">Continue to Deployment</button>
     <div class="message" id="message"></div>
 
     <script>
-        function checkFork() {
-            const username = document.getElementById('githubUsername').value;
-            const messageDiv = document.getElementById('message');
+        async function chkfork(username, repon) {
+            const url = `https://api.github.com/repos/${username}/${repon}`;
+
+            try {
+                const response = await fetch(url);
+                if (response.ok) {
+                    const data = await response.json();
+                    return data.fork;
+                } else if (response.status === 404) {
+                    console.error('Not found.');
+                } else {
+                    console.error('Error:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error:', error.message);
+            }
+            return false;
+        }
+
+        async function isForked() {
+            const username = document.getElementById('githubUsername').value.trim();
 
             if (username) {
-                messageDiv.innerHTML = `Hi ${username}, please fork the repository before continuing.`;
-                // Here you could add a link to your repository
-                messageDiv.innerHTML += '<br><a href="https://github.com/your-repo-url" target="_blank">Fork the repository</a>';
+                const isForked = await chkfork(username, 'Kish-MD');
+
+                if (isForked) {
+                    window.location.href = 'https://dashboard.heroku.com/new?template=https://github.com/Brashokish/Kish-MD';
+                } else {
+                    alert(`Hi ${username}, please fork the repository before continuing.`);
+                    window.location.href = 'https://github.com/Brashokish/Kish-MD/fork';
+                }
             } else {
-                messageDiv.innerHTML = 'Please enter your GitHub username.';
+                alert('Please enter your GitHub username.');
             }
         }
     </script>
-
 </body>
 </html>
