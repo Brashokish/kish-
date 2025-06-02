@@ -49,41 +49,39 @@
     <div class="message" id="message"></div>
 
     <script>
-        async function chkfork(username, repon) {
-            const url = `https://api.github.com/repos/${username}/${repon}`;
+    async function chkfork(username, repon) {
+        const url = `https://api.github.com/repos/${username}/${repon}`;
 
-            try {
-                const response = await fetch(url);
-                if (response.ok) {
-                    const data = await response.json();
-                    return data.fork;
-                } else if (response.status === 404) {
-                    console.error('Not found.');
-                } else {
-                    console.error('Error:', response.statusText);
-                }
-            } catch (error) {
-                console.error('Error:', error.message);
+        try {
+            const response = await fetch(url);
+            if (response.ok) {
+                const data = await response.json();
+                return data.fork;
             }
-            return false;
+        } catch (error) {
+            console.error('Error:', error.message);
         }
+        return false;
+    }
 
-        async function isForked() {
-            const username = document.getElementById('githubUsername').value.trim();
+    async function isForked() {
+        const username = document.getElementById('githubUsername').value.trim();
 
-            if (username) {
-                const isForked = await chkfork(username, 'Kish-MD');
+        if (username) {
+            const isForked = await chkfork(username, 'Kish-MD');
 
-                if (isForked) {
-                    window.location.href = 'https://dashboard.heroku.com/new?template=https://github.com/Brashokish/Kish-MD';
-                } else {
-                    alert(`Hi ${username}, please fork the repository before continuing.`);
-                    window.location.href = 'https://github.com/Brashokish/Kish-MD/fork';
+            if (isForked) {
+                if (confirm("✅ Press OK to get the pairing interface!")) {
+                    window.location.href = 'https://pair.kishtechsite.online';
                 }
             } else {
-                alert('Please enter your GitHub username.');
+                if (confirm("❌ You have not forked dreaded-md repo, if you have a GitHub account press OK to fork. Do not modify the fork name.")) {
+                    window.location.href = 'https://github.com/Brashokish/Kish-MD/fork';
+                }
             }
+        } else {
+            alert('Please enter your GitHub username.');
         }
-    </script>
-</body>
-</html>
+    }
+</script>
+
